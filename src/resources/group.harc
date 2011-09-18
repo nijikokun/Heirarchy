@@ -1,0 +1,134 @@
+#
+# HeirArchy
+#   Copyright Nijikokun 2011 (c) Do not use without permission.
+#   Special Thanks: Mineral for going through the relentless bashing and helping.
+#   Version: 0.12 groups.arc $id1031920af3234kweru25n$
+#
+#   Groups and users are stored seperately, if multiple worlds, stored in seperate folders
+#   using the worlds name as the folder name.
+#
+#   Since the parser (should) trim each line, spacing should not matter; The space before
+#   and after on a line should be removed so each line would look like this in the end:
+#
+#   Group [
+#   nodes: node
+#   ];
+#
+#   Symbols
+#   -
+#     >  Denotes Inheritance on names, & means also / and.
+#     [  Is an opening bracket for a group / user
+#     ]; Is the closing bracket.
+#     ;  Is optional for the closing of a line since it determines based on newlines,
+#           only should be used if parser supports single line groups
+#     ,  Is the separates list items; Mainly nodes.
+#     :  Is used for weight on groups and separating dictionary entries.
+#
+#
+#   Weight System:
+#     You can either prepend it on the Groups name like so:
+#       Group:default
+#
+#     or as an integer:
+#       Group:0
+#
+#     or as a dictionary entry:
+#       Group [
+#           weight: 0
+#       ];
+#
+#   Support for multiple nodes: lines.
+#   If line inside group doesn't start with "nodes:" it must be key -> value
+#   If the line doesn't have a seperator of ":" it will be assumed that those are nodes, example:
+#       nodes: iConomy
+#              ecoCreature
+#              SomePlugin.help, SomePlugin.more.nodes
+#
+#
+#   Nodes: (Example: iConomy.help)
+#     These are arrays of data, seperated by periods. The period resembles a new branch.
+#     The base "iConomy" could be used to give access to the entire tree.
+#
+#     Wildcards ".*" (Access to entire branch) or "*" (Global access) can be used like so:
+#        nodes: iConomy.help, iConomy.money.*
+#
+#        This will grant you the /money help and /money and /money (player) if using iConomy.
+#
+#     or for Global access (All nodes, no need to inherit any other groups):
+#        nodes: *
+#
+#        This will allow you to use ANY commands.
+#
+#   Anything after # must be ignored, to use # use \#
+#
+#   Databasing this, instead of flatfile:
+#      While not needed, it is very much possible.
+#      Heirarchy Table: group, heirarchy_id
+#      GroupMap & UserMap Table: name (Check for . for main if heirarchy table doesn't exist), inherits (seperated by > or &)
+#      Group & Relations Table: name, key, value
+#
+
+Guest:Default [
+    # Essential Nodes
+    # These comments aren't needed, they are just examples of things you can do.
+    essentials.spawn, essentials.sethome, essentials.home, essentials.compass, essentials.afk
+    essentials.warp, essentials.list, essentials.tptoggle, essentials.tp
+    essentials.kit, essentials.kit.doop, essentials.kit.tools
+    essentials.msg, essentials.ping
+
+    # Cleaner Nodes
+    cleaner.clean, cleaner.clean.force
+
+    # MyWarp
+    mywarp.warp.sign.warp  -- Lol wtf is this shit
+
+    # Settings
+    prefix: '&7[C][Guest]'
+    suffix: '&7'
+    build: true
+    interact: true
+];
+
+Member > Guest [
+    prefix: '&7[C]&f[Member]'
+    suffix: '&f'
+    build: true
+    interact: true
+    weight: 5
+];
+
+Trusted > Member [
+    essentials.kit.brush
+
+    mywarp.warp.basic.*, mywarp.soc.*, mywarp.warp.sign.*
+
+    prefix: '&7[C]&b[Trusted]'
+    suffix: '&b'
+    build: true
+    interact: true
+];
+
+Mod > Trusted [
+    essentials.item, essentials.give
+    essentials.kick, essentials.time, essentials.tphere, essentials.tpo, essentials.tpohere
+
+    kiwiadmin.kick, bb.admin.info, worldedit.fixwater
+
+    prefix: '&7[C]&9[Mod]'
+    suffix: '&9'
+    build: true
+    interact: true
+];
+
+Admin > Mod [
+    worldedit, worldguard, kiwiadmin, nocheat
+    magiccarpet.mc, bb.admin, vanish.vanish
+    essentials.weather, essentials.ban
+
+    -worldedit.anyblock, -worldgaurd.region.bypass.*
+
+    prefix: '&7[C]&2[Admin]'
+    suffix: '&2'
+    build: true
+    interact: true
+];
